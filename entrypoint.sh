@@ -43,7 +43,7 @@ if [ ! -f "${ENGINE}" ] || [ "${WEIGHTS}" -nt "${ENGINE}" ]; then
         cd "${MODEL_DIR}"
         python3 -c "
 from ultralytics import YOLO
-YOLO('best.pt', task='detect').export(format='engine', imgsz=320, half=True, opset=19)
+YOLO('best.pt', task='detect').export(format='engine', imgsz=320, half=True, opset=19, simplify=False)
 "
     )
     echo "[entrypoint] Engine compiled: $(ls -lh "${ENGINE}" | awk '{print $5}')"
