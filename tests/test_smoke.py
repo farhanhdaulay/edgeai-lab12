@@ -10,6 +10,7 @@ Run locally with: pytest -v tests/
 """
 
 from pathlib import Path
+
 import pytest
 
 
@@ -30,8 +31,9 @@ def test_requirements_pinned():
         # Allow editable installs and -e/-r/-c directives
         if line.startswith(("-e", "-r", "-c", "--")):
             continue
-        assert "==" in line or "~=" in line or ">=" in line, \
+        assert "==" in line or "~=" in line or ">=" in line, (
             f"Unpinned dep in requirements.txt: {line!r}"
+        )
 
 
 def test_dockerfile_uses_arm64_base():
@@ -40,8 +42,9 @@ def test_dockerfile_uses_arm64_base():
     # dustynv images are aarch64-only; l4t-base is also aarch64-only.
     # Either is acceptable; a generic python:3.11 base would silently
     # build for x86 and never run on the Jetson.
-    assert any(base in df for base in ["dustynv/", "l4t-", "nvcr.io/nvidia/l4t"]), \
+    assert any(base in df for base in ["dustynv/", "l4t-", "nvcr.io/nvidia/l4t"]), (
         "Dockerfile.ci must FROM a Jetson ARM64 base (dustynv/* or l4t-*)"
+    )
 
 
 @pytest.mark.parametrize("name", ["inference_node.py", "best.pt", "requirements.txt"])

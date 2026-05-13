@@ -4,12 +4,14 @@ Reads frames from a video file (or camera), runs detection with
 the fine-tuned TensorRT engine from Lab 9, and publishes bounding-box
 results as JSON messages to an MQTT topic.
 """
+
 import argparse
 import json
 import os
 import signal
 import sys
 import time
+
 import cv2
 import paho.mqtt.client as mqtt
 from paho.mqtt.enums import CallbackAPIVersion
@@ -18,14 +20,17 @@ from ultralytics import YOLO
 # --- Graceful shutdown + Docker health check heartbeat ---
 running = True
 
+
 def signal_handler(sig, frame):
     """Handle SIGTERM/SIGINT for graceful shutdown."""
     global running
     print(f"\n[inference] Received signal {sig}, shutting down...")
     running = False
 
+
 signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
+
 
 def write_health():
     """Timestamp heartbeat for Docker HEALTHCHECK (consumed by
@@ -37,12 +42,17 @@ def write_health():
     except OSError:
         pass
 
+
 def main():
     parser = argparse.ArgumentParser(description="YOLO26 TensorRT inference node")
-    parser.add_argument("--model", default="/opt/models/best.engine",
-                        help="Path to TensorRT engine (built at image-build time)")
-    parser.add_argument("--source", default="/opt/data/test_video.mp4",
-                        help="Video file or camera index")
+    parser.add_argument(
+        "--model",
+        default="/opt/models/best.engine",
+        help="Path to TensorRT engine (built at image-build time)",
+    )
+    parser.add_argument(
+        "--source", default="/opt/data/test_video.mp4", help="Video file or camera index"
+    )
     parser.add_argument("--imgsz", type=int, default=320)
     parser.add_argument("--conf", type=float, default=0.25)
     parser.add_argument("--mqtt-broker", default=os.getenv("MQTT_BROKER", "localhost"))
@@ -82,15 +92,17 @@ def main():
 
         results = model.predict(frame, imgsz=args.imgsz, conf=args.conf, verbose=False)
 
-        # Build detection payload 
+        # Build detection payload
         detections = []
         for r in results:
             for box in r.boxes:
-                detections.append({
-                    "class": r.names[int(box.cls)],
-                    "confidence": round(float(box.conf), 3),
-                    "bbox": [round(float(x), 1) for x in box.xyxy[0].tolist()],
-                })
+                detections.append(
+                    {
+                        "class": r.names[int(box.cls)],
+                        "confidence": round(float(box.conf), 3),
+                        "bbox": [round(float(x), 1) for x in box.xyxy[0].tolist()],
+                    }
+                )
 
         payload = {
             "t": round(time.time(), 3),
@@ -109,14 +121,17 @@ def main():
         if frame_count % 100 == 0:
             elapsed = time.monotonic() - fps_start
             fps = frame_count / elapsed if elapsed > 0 else 0
-            print(f"[inference] {frame_count} frames, {fps:.1f} FPS, "
-                  f"last frame: {len(detections)} detections")
+            print(
+                f"[inference] {frame_count} frames, {fps:.1f} FPS, "
+                f"last frame: {len(detections)} detections"
+            )
 
     # Cleanup
     cap.release()
     client.loop_stop()
     client.disconnect()
     print(f"[inference] Shutdown complete. Processed {frame_count} frames.")
+
 
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:b79f95c642e19eeec9adda1a923b10c5bbb05e191d5c8aa16c978af54903bd94"
+content_hash = "sha256:279355693bc0af59a9bef39146ec77bf0492a6a72e103f1ff8f953e2fb4088da"
 
 [[metadata.targets]]
 requires_python = "==3.10.*"
@@ -631,7 +631,7 @@ name = "ruff"
 version = "0.15.12"
 requires_python = ">=3.7"
 summary = "An extremely fast Python linter and code formatter, written in Rust."
-groups = ["dev"]
+groups = ["default", "dev"]
 files = [
     {file = "ruff-0.15.12-py3-none-linux_armv6l.whl", hash = "sha256:f86f176e188e94d6bdbc09f09bfd9dc729059ad93d0e7390b5a73efe19f8861c"},
     {file = "ruff-0.15.12-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:e3bcd123364c3770b8e1b7baaf343cc99a35f197c5c6e8af79015c666c423a6c"},
